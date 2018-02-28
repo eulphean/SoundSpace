@@ -9,15 +9,16 @@ using namespace cv;
 //--------------------------------------------------------------
 void ofApp::setup(){
   ofSetVerticalSync(true);
-    //cout << "Target: " << cam.getTarget() << endl;
   ofBackground(ofColor::black);
-  receive.setup(PORT);
+  
+  // Setup OSC handle.
+  oscHandle.setup();
   
   // Load GUI from a pre-saved XML file.
   gui.setup();
     
-    cam.setNearClip(15.0f);
-    cam.setFarClip(12000.0f);
+  cam.setNearClip(15.0f);
+  cam.setFarClip(12000.0f);
 
   #ifdef _USE_VIDEO
   
@@ -84,7 +85,10 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-
+  
+  // Update OSC handle.
+  oscHandle.update();
+  
   // Set contourFinder with sliders to get the right value for contour finding.
   contourFinder.setMinAreaRadius(minArea);
   contourFinder.setMaxAreaRadius(maxArea);
@@ -145,15 +149,12 @@ void ofApp::update(){
   
   #endif
   
-  // Handle touch OSC messages. 
-  processOSCMessages();
-  
   // Process tracked objects.
-  // Map the perimeter of their connections to sound.
-  processTrackedObjects();
+  // Send X,Y,Z to Wekinator
+  processPositionForWekinator();
 }
 
-void ofApp::processTrackedObjects() {
+void ofApp::processPositionForWekinator() {
 
   vector<TrackedRect>& followers = tracker.getFollowers();
   int objectCount = followers.size();
@@ -163,8 +164,12 @@ void ofApp::processTrackedObjects() {
     // Trackers should start tracking. OSC signals are sent
     // and sound starts coming. What I have made is essentially
     // an instruments.
+    
+    // We want to trigger a record command.
   } else {
     // Nobody is in the room, stop the audio.
+    
+    // We want to stop recording.
   }
   
   // Clear the poly and recreate it.
@@ -178,10 +183,14 @@ void ofApp::processTrackedObjects() {
   }
   trackedPoly.close();
   
-  // Map this polyline's parameters to sound.
-  int perimeter = trackedPoly.getPerimeter();
-  
-  // Send X, Y, Z to the OSC engine.
+  // ASSUMPTION. There is only 1 person in the room.
+  // We will need to make sure we indicate to OSC that we need this
+  // to be sent this to another port on WEKINATOR as there are more
+  // more people in the room.
+  if (followers.size() > 0) {
+    glm::vec3 position = followers[0].getWorldCoordinate();
+    oscHandle.sendPositionToWekinator(position);
+  }
 }
 
 //--------------------------------------------------------------
@@ -189,12 +198,6 @@ void ofApp::draw(){
   if (hideGui) {
     gui.draw();
   }
-  
-  //ofDrawBitmapString(trackedPoly.getPerimeter(), 10, 500);
-  
-  // Print follower coordinates so we can see what Wekinator will be
-  // trained for.
-  printFollowerCoordinates();
   
   cam.begin();
     int imageHeight = depthPixels.getHeight();
@@ -257,20 +260,6 @@ void ofApp::draw(){
   cam.end();
 }
 
-void ofApp::printFollowerCoordinates() {
-  // Go through each follower and print their x, y, z coordinate.
-  vector<TrackedRect>& followers = tracker.getFollowers();
-  for (int i = 0; i < followers.size(); i++) {
-      glm::vec3 worldCoordinate = followers[i].getWorldCoordinate();
-      ofEnableDepthTest();
-      // Filter out these followers popping up at 0, 0, 0
-      if (worldCoordinate != glm::vec3(0, 0, 0)) {
-        ofDrawBitmapString(ofToString(worldCoordinate), 10, 50);
-      }
-  }
-  
-}
-
 // Calculate world coordinates for tracked objects' center.
 void ofApp::updateWorldCoordinates() {
   vector <TrackedRect>& followers = tracker.getFollowers();
@@ -287,8 +276,7 @@ void ofApp::updateWorldCoordinates() {
       float depth = rawDepthPixels[pixelIndex];
       if (depth > 0) {
         glm::vec3 worldCoordinate = depthToPointCloudPos(center.x, center.y, depth);
-        cout << "Center: " << ofToString(center) << " World: " << ofToString(worldCoordinate) << " Raw Depth : " << depth << endl;
-           followers[i].setWorldCoordinate(worldCoordinate);
+        followers[i].setWorldCoordinate(worldCoordinate);
       }
     }
   }
@@ -316,12 +304,12 @@ void ofApp::drawPointCloud() {
     // Size of the point.
 	glPointSize(1);
 	ofPushMatrix();
-        // Projected points are 'upside down' and 'backwards'
-        ofScale(1, -1, -1);
-        ofTranslate(0, 0, 0); // center the points a bit
-        ofEnableDepthTest();
-        mesh.draw();
-        ofDisableDepthTest();
+    // Projected points are 'upside down' and 'backwards'
+    ofScale(1, -1, -1);
+    ofTranslate(0, 0, 0); // center the points a bit
+    ofEnableDepthTest();
+    mesh.draw();
+    ofDisableDepthTest();
 	ofPopMatrix();
 }
 
@@ -362,32 +350,6 @@ void ofApp::keyPressed(int key) {
   // 5
   if (key == 53) {
     hideGui = !hideGui;
-  }
-}
-
-void ofApp::processOSCMessages() {
-  // Touch OSC updates.
-  while (receive.hasWaitingMessages()) {
-    ofxOscMessage m;
-    // Set the next message.
-    #pragma warning(disable: WARNING_CODE)
-    receive.getNextMessage(&m);
-    
-    if (m.getAddress() == "/3/toggle1") {
-      showFollowers = !showFollowers;
-    }
-    
-    if (m.getAddress() == "/3/toggle2") {
-      showPointCloud = !showPointCloud;
-    }
-    
-    if (m.getAddress() == "/3/toggle3") {
-      showTexture = !showTexture;
-    }
-    
-    if (m.getAddress() == "/3/toggle4") {
-      showContours = !showContours;
-    }
   }
 }
 

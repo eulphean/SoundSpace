@@ -4,8 +4,9 @@
 #include "TrackedRect.h"
 #include "ofxKinectV2.h"
 #include "ofxGui.h"
-#include "ofxOsc.h"
+#include "Osc.h"
 #include "ofxCv.h"
+
 
 #define PORT 8000
 
@@ -24,26 +25,21 @@ class ofApp : public ofBaseApp{
     void keyPressed(int key);
     void exit();
   
-    void processOSCMessages();
     void updateWorldCoordinates();
-    void processTrackedObjects();
+    void processPositionForWekinator();
   
     // Point Cloud.
     glm::vec3 depthToPointCloudPos(int x, int y, float z);
     void drawPointCloud();
   
-    // Real X, Y, Z coordinates.
-    void printFollowerCoordinates();
+    // OSC
+    Osc oscHandle; 
   
     // Kinect parameters.
     ofxKinectV2 * kinect;
     ofTexture texDepth;
     ofPixels depthPixels;
     ofFloatPixels rawDepthPixels;
-  
-    // Touch OSC parameters.
-    ofxOscReceiver receive;
-    ofVec2f mappedOsc;
   
     // GUI.
     ofxPanel gui;
