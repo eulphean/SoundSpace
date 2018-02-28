@@ -2,7 +2,6 @@
 
 #include "ofMain.h"
 #include "TrackedRect.h"
-#include "AudioPlayer.h"
 #include "ofxKinectV2.h"
 #include "ofxGui.h"
 #include "ofxOsc.h"
@@ -25,6 +24,7 @@ class ofApp : public ofBaseApp{
 		void draw();
     void keyPressed(int key);
     void exit();
+  
     void processOSCMessages();
     void updateWorldCoordinates();
     void processTrackedObjects();
@@ -33,22 +33,18 @@ class ofApp : public ofBaseApp{
     glm::vec3 depthToPointCloudPos(int x, int y, float z);
     void drawPointCloud();
   
+    // Real X, Y, Z coordinates.
+    void printFollowerCoordinates();
+  
     // Kinect parameters.
     ofxKinectV2 * kinect;
     ofTexture texDepth;
     ofPixels depthPixels;
     ofFloatPixels rawDepthPixels;
   
-    float avgX;
-    float avgY;
-    float avgBrightness;
-  
     // Touch OSC parameters.
     ofxOscReceiver receive;
     ofVec2f mappedOsc;
-  
-    // Audio player responsible to play the sample.
-    AudioPlayer audioPlayer;
   
     // GUI.
     ofxPanel gui;

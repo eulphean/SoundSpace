@@ -76,9 +76,6 @@ void ofApp::setup(){
 
   // Restore the GUI from XML file.
   gui.loadFromFile("KinectInteractive.xml");
-
-  // "What do you desire" by Alan Watts sample to be played. 
-  audioPlayer.addSample("/Users/amay/Documents/of_v20170714_osx_release/apps/myApps/KinectInteractiveSound/bin/data/1.wav");
 }
 
 //--------------------------------------------------------------
@@ -144,8 +141,6 @@ void ofApp::update(){
   // Handle touch OSC messages. 
   processOSCMessages();
   
-  audioPlayer.update();
-  
   // Process tracked objects.
   // Map the perimeter of their connections to sound.
   processTrackedObjects();
@@ -155,18 +150,14 @@ void ofApp::processTrackedObjects() {
 
   vector<TrackedRect>& followers = tracker.getFollowers();
   int objectCount = followers.size();
-
-  // Current audio playback state.
-  State playbackState = audioPlayer.getPlaybackState();
   
   // Somebody entered the room, play audio.
   if (followers.size() > 0) {
-    if (playbackState != playing) {
-      audioPlayer.play();
-    }
+    // Trackers should start tracking. OSC signals are sent
+    // and sound starts coming. What I have made is essentially
+    // an instruments.
   } else {
     // Nobody is in the room, stop the audio.
-    audioPlayer.stop();
   }
   
   // Clear the poly and recreate it.
@@ -182,31 +173,8 @@ void ofApp::processTrackedObjects() {
   
   // Map this polyline's parameters to sound.
   int perimeter = trackedPoly.getPerimeter();
-
-  audioPlayer.updateSound(perimeter, objectCount);
-}
-
-// Calculate world coordinates for tracked objects' center.
-void ofApp::updateWorldCoordinates() {
-  vector <TrackedRect>& followers = tracker.getFollowers();
-  for (int i = 0; i < followers.size(); i++) {
-    int label = followers[i].getLabel();
-    
-    // Only update the Z distance if it's recently seen.
-    // Else, we won't update the Z distance.
-    if (tracker.getLastSeen(label) == 0) {
-      // Center of the bounding rectangle.
-      ofVec2f center = followers[i].getCenter();
-        
-      int pixelIndex = center.x + center.y * depthPixels.getWidth();
-      float depth = rawDepthPixels[pixelIndex];
-      if (depth > 0) {
-        glm::vec3 worldCoordinate = depthToPointCloudPos(center.x, center.y, depth);
-        cout << "Center: " << ofToString(center) << " World: " << ofToString(worldCoordinate) << " Raw Depth : " << depth << endl;
-           followers[i].setWorldCoordinate(worldCoordinate);
-      }
-    }
-  }
+  
+  // Send X, Y, Z to the OSC engine.
 }
 
 //--------------------------------------------------------------
@@ -214,30 +182,37 @@ void ofApp::draw(){
   if (hideGui) {
     gui.draw();
   }
-    
-  ofDrawBitmapString(trackedPoly.getPerimeter(), 10, 500);
+  
+  //ofDrawBitmapString(trackedPoly.getPerimeter(), 10, 500);
+  
+  // Print follower coordinates so we can see what Wekinator will be
+  // trained for.
+  printFollowerCoordinates();
   
   cam.begin();
+    int imageHeight = depthPixels.getHeight();
+
+    //ofDrawAxis(10);
+  
+    ofPushMatrix();
+  
+      ofScale(1, -1, 1);
+      ofTranslate(0, -imageHeight, 0);
+  
+      // Contours.
+      if (showContours) {
+        ofPushStyle();
+        ofSetColor(ofColor::red);
+        contourFinder.draw();
+        ofPopStyle();
+      }
+  
+    ofPopMatrix();
+  
     // Texture.
     if (showTexture) {
         texDepth.draw(0, 0);
     }
-    
-    int imageHeight = depthPixels.getHeight();
-
-    //ofDrawAxis(10);
-    
-    ofPushMatrix();
-    
-      ofScale(1, -1, 1);
-      ofTranslate(0, -imageHeight, 0);
-    
-      // Contours.
-      if (showContours) {
-        contourFinder.draw();
-      }
-  
-    ofPopMatrix();
   
     ofPushMatrix();
         ofTranslate(glm::vec3(0, 0, 300));
@@ -246,7 +221,7 @@ void ofApp::draw(){
         if (showPointCloud) {
             drawPointCloud();
         }
-        
+  
         // Followers
         if (showFollowers) {
             ofPushMatrix();
@@ -271,8 +246,45 @@ void ofApp::draw(){
             ofPopMatrix();
         }
     ofPopMatrix();
-    
+  
   cam.end();
+}
+
+void ofApp::printFollowerCoordinates() {
+  // Go through each follower and print their x, y, z coordinate.
+  vector<TrackedRect>& followers = tracker.getFollowers();
+  for (int i = 0; i < followers.size(); i++) {
+      glm::vec3 worldCoordinate = followers[i].getWorldCoordinate();
+      ofEnableDepthTest();
+      // Filter out these followers popping up at 0, 0, 0
+      if (worldCoordinate != glm::vec3(0, 0, 0)) {
+        ofDrawBitmapString(ofToString(worldCoordinate), 10, 50);
+      }
+  }
+  
+}
+
+// Calculate world coordinates for tracked objects' center.
+void ofApp::updateWorldCoordinates() {
+  vector <TrackedRect>& followers = tracker.getFollowers();
+  for (int i = 0; i < followers.size(); i++) {
+    int label = followers[i].getLabel();
+    
+    // Only update the Z distance if it's recently seen.
+    // Else, we won't update the Z distance.
+    if (tracker.getLastSeen(label) == 0) {
+      // Center of the bounding rectangle.
+      ofVec2f center = followers[i].getCenter();
+        
+      int pixelIndex = center.x + center.y * depthPixels.getWidth();
+      float depth = rawDepthPixels[pixelIndex];
+      if (depth > 0) {
+        glm::vec3 worldCoordinate = depthToPointCloudPos(center.x, center.y, depth);
+        cout << "Center: " << ofToString(center) << " World: " << ofToString(worldCoordinate) << " Raw Depth : " << depth << endl;
+           followers[i].setWorldCoordinate(worldCoordinate);
+      }
+    }
+  }
 }
 
 void ofApp::drawPointCloud() {

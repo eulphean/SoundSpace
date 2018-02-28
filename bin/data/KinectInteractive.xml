@@ -6,19 +6,19 @@
 		<Threshold>14.3112</Threshold>
 	</ofxCv>
 	<Contour>
-		<Min_area>22</Min_area>
-		<Max_area>85.0153</Max_area>
-		<Threshold>160</Threshold>
-		<Blur>4</Blur>
+		<Min_area>1</Min_area>
+		<Max_area>288.689</Max_area>
+		<Threshold>175.638</Threshold>
+		<Blur>20</Blur>
 	</Contour>
 	<Tracker>
 		<Persistence>59.6939</Persistence>
 		<Max_Distance>299.579</Max_Distance>
-		<Smoothing_Rate>5</Smoothing_Rate>
+		<Smoothing_Rate>12.2449</Smoothing_Rate>
 	</Tracker>
 	<Kinect>
 		<kinectV2_502087641942>
-			<minDistance>500</minDistance>
+			<minDistance>0</minDistance>
 			<maxDistance>10000</maxDistance>
 		</kinectV2_502087641942>
 	</Kinect>
