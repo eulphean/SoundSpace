@@ -51,7 +51,7 @@ class ofApp : public ofBaseApp{
     ofxGuiGroup kinectGroup;
     ofxGuiGroup cvGroup;
     ofxGuiGroup trackerGroup;
-    ofxFloatSlider minArea, maxArea, threshold, persistence, maxDistance, blurVal, smoothingRate;
+    ofxFloatSlider minArea, maxArea, threshold, persistence, maxDistance, blurVal, smoothingRate, dilateVal, gaussianVal;
   
     // Contour Finder.
     ofxCv::ContourFinder contourFinder;

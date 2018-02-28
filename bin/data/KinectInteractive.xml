@@ -6,10 +6,12 @@
 		<Threshold>14.3112</Threshold>
 	</ofxCv>
 	<Contour>
-		<Min_area>1</Min_area>
-		<Max_area>288.689</Max_area>
-		<Threshold>175.638</Threshold>
-		<Blur>20</Blur>
+		<Min_area>10.6108</Min_area>
+		<Max_area>248.024</Max_area>
+		<Threshold>130.138</Threshold>
+		<Blur>11.2315</Blur>
+		<Dilate>4.85391</Dilate>
+		<Gaussian>10</Gaussian>
 	</Contour>
 	<Tracker>
 		<Persistence>59.6939</Persistence>

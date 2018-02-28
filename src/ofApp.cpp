@@ -64,7 +64,10 @@ void ofApp::setup(){
   cvGroup.add(minArea.setup("Min area", 10, 1, 100));
   cvGroup.add(maxArea.setup("Max area", 200, 1, 500));
   cvGroup.add(threshold.setup("Threshold", 128, 0, 255));
-  cvGroup.add(blurVal.setup("Blur", 10, 0, 20));
+  cvGroup.add(blurVal.setup("Blur", 10, 0, 50));
+  cvGroup.add(dilateVal.setup("Dilate", 5, 0, 50));
+  cvGroup.add(gaussianVal.setup("Gaussian", 0, 0, 10));
+  
   gui.add(&cvGroup);
   
   // tracker GUI.
@@ -122,6 +125,8 @@ void ofApp::update(){
         // Get depth pixels.
         depthPixels = kinect -> getDepthPixels();
         blur(depthPixels, blurVal);
+        ofxCv::dilate(depthPixels, depthPixels, dilateVal);
+        GaussianBlur(depthPixels, gaussianVal);
         rawDepthPixels = kinect -> getRawDepthPixels();
         
         // Create the depth texture from Kinect pixels.
