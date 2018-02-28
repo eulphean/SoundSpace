@@ -37,6 +37,10 @@ class Osc {
     vector<ofxOscSender> senders;
     vector<int> sendPorts { 6448, 6449 };
   
+    // Track previous notes so as to not send the same note again. 
+    int previousUserANote;
+    int previousUserBNote;
+  
     // Pitch map
     vector<int> pitchSpace;
 };
