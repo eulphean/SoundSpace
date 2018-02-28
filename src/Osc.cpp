@@ -64,12 +64,14 @@ void Osc::processIncomingCommands(ofxOscMessage &m) {
 
 // Send the position to Wekinator.
 void Osc::sendPositionToWekinator(int idx, glm::vec3 pos) {
-  ofxOscMessage m;
-  m.setAddress(string(SENDMESSAGE));
-  m.addFloatArg((float)pos.x);
-  m.addFloatArg((float)pos.y);
-  m.addFloatArg((float)pos.z);
-  senders[idx].sendMessage(m, false);
+  if (idx < senders.size()) {
+    ofxOscMessage m;
+    m.setAddress(string(SENDMESSAGE));
+    m.addFloatArg((float)pos.x);
+    m.addFloatArg((float)pos.y);
+    m.addFloatArg((float)pos.z);
+    senders[idx].sendMessage(m, false);
+  }
 }
 
 void Osc::setupPitchSpace() {

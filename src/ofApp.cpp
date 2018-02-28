@@ -188,9 +188,9 @@ void ofApp::processPositionForWekinator() {
   // to be sent this to another port on WEKINATOR as there are more
   // more people in the room.
   // For training the models, we will train it index by index.
-  if (followers.size() > 0) {
-    glm::vec3 position = followers[0].getWorldCoordinate();
-    oscHandle.sendPositionToWekinator(0, position);
+  for (int i = 0; i < followers.size(); i++) {
+    glm::vec3 position = followers[i].getWorldCoordinate();
+    oscHandle.sendPositionToWekinator(i, position);
   }
 }
 
