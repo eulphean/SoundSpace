@@ -5,7 +5,6 @@
 #include "ofxKinectV2.h"
 #include "ofxGui.h"
 #include "ofxOsc.h"
-#include "ofxPDSP.h"
 #include "ofxCv.h"
 
 #define PORT 8000
@@ -51,7 +50,7 @@ class ofApp : public ofBaseApp{
     ofxGuiGroup kinectGroup;
     ofxGuiGroup cvGroup;
     ofxGuiGroup trackerGroup;
-    ofxFloatSlider minArea, maxArea, threshold, persistence, maxDistance, blurVal, smoothingRate, dilateVal, gaussianVal;
+    ofxFloatSlider minArea, maxArea, threshold, persistence, maxDistance, blurVal, smoothingRate, dilateVal, gaussianVal, erodeVal;
   
     // Contour Finder.
     ofxCv::ContourFinder contourFinder;

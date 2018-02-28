@@ -66,7 +66,8 @@ void ofApp::setup(){
   cvGroup.add(threshold.setup("Threshold", 128, 0, 255));
   cvGroup.add(blurVal.setup("Blur", 10, 0, 50));
   cvGroup.add(dilateVal.setup("Dilate", 5, 0, 50));
-  cvGroup.add(gaussianVal.setup("Gaussian", 0, 0, 10));
+  cvGroup.add(gaussianVal.setup("Gaussian", 0, 0, 30));
+  cvGroup.add(erodeVal.setup("Erode", 0, 0, 20));
   
   gui.add(&cvGroup);
   
@@ -125,6 +126,7 @@ void ofApp::update(){
         // Get depth pixels.
         depthPixels = kinect -> getDepthPixels();
         blur(depthPixels, blurVal);
+        ofxCv::erode(depthPixels, depthPixels, erodeVal);
         ofxCv::dilate(depthPixels, depthPixels, dilateVal);
         GaussianBlur(depthPixels, gaussianVal);
         rawDepthPixels = kinect -> getRawDepthPixels();
