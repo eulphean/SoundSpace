@@ -7,17 +7,17 @@
 		</kinectV2_502087641942>
 	</Kinect>
 	<Contour>
-		<Min_area>10</Min_area>
-		<Max_area>110.474</Max_area>
-		<Threshold>195.153</Threshold>
-		<Blur>14.0306</Blur>
-		<Dilate>7.14286</Dilate>
+		<Min_area>21.7092</Min_area>
+		<Max_area>113.02</Max_area>
+		<Threshold>58.5459</Threshold>
+		<Blur>0</Blur>
+		<Dilate>0</Dilate>
 		<Gaussian>0</Gaussian>
-		<Erode>3.5</Erode>
+		<Erode>1.5</Erode>
 	</Contour>
 	<Tracker>
 		<Persistence>60</Persistence>
-		<Max_Distance>245.918</Max_Distance>
-		<Smoothing_Rate>50.5102</Smoothing_Rate>
+		<Max_Distance>300</Max_Distance>
+		<Smoothing_Rate>38.2653</Smoothing_Rate>
 	</Tracker>
 </group>

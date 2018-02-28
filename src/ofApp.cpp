@@ -80,7 +80,7 @@ void ofApp::setup(){
   gui.add(&trackerGroup);
 
   // Restore the GUI from XML file.
-  gui.loadFromFile("SoundSpace.xml");
+  gui.loadFromFile("KinectInteractiveSound.xml");
 }
 
 //--------------------------------------------------------------
@@ -187,9 +187,10 @@ void ofApp::processPositionForWekinator() {
   // We will need to make sure we indicate to OSC that we need this
   // to be sent this to another port on WEKINATOR as there are more
   // more people in the room.
+  // For training the models, we will train it index by index.
   if (followers.size() > 0) {
     glm::vec3 position = followers[0].getWorldCoordinate();
-    oscHandle.sendPositionToWekinator(position);
+    oscHandle.sendPositionToWekinator(0, position);
   }
 }
 
@@ -203,6 +204,11 @@ void ofApp::draw(){
     int imageHeight = depthPixels.getHeight();
 
     //ofDrawAxis(10);
+  
+    // Texture.
+    if (showTexture) {
+        texDepth.draw(0, 0);
+    }
   
     ofPushMatrix();
   
@@ -219,10 +225,6 @@ void ofApp::draw(){
   
     ofPopMatrix();
   
-    // Texture.
-    if (showTexture) {
-        texDepth.draw(0, 0);
-    }
   
     ofPushMatrix();
         ofTranslate(glm::vec3(0, 0, 300));
@@ -354,5 +356,5 @@ void ofApp::keyPressed(int key) {
 }
 
 void ofApp::exit(){
-  gui.saveToFile("SoundSpace.xml");
+  gui.saveToFile("KinectInteractiveSound.xml");
 }

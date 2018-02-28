@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<OSCOutputGroup>
+  <oscMessage>/wek/1</oscMessage>
+  <hostName>localhost</hostName>
+  <outputPort>8000</outputPort>
+  <outputs class="linked-list">
+    <wekimini.osc.OSCNumericOutput>
+      <name>1-1</name>
+      <min>0.0</min>
+      <max>35.0</max>
+      <outputType>INTEGER</outputType>
+      <limitType>HARD</limitType>
+      <trainingDataLimitRestriction>ENFORCE_LIMITS</trainingDataLimitRestriction>
+      <trainingDataIntegerRestriction>DONT_ENFORCE_INTEGER</trainingDataIntegerRestriction>
+    </wekimini.osc.OSCNumericOutput>
+  </outputs>
+</OSCOutputGroup>
