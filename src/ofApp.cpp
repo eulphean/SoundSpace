@@ -79,7 +79,7 @@ void ofApp::setup(){
   gui.add(&trackerGroup);
 
   // Restore the GUI from XML file.
-  gui.loadFromFile("KinectInteractive.xml");
+  gui.loadFromFile("SoundSpace.xml");
 }
 
 //--------------------------------------------------------------
@@ -392,5 +392,5 @@ void ofApp::processOSCMessages() {
 }
 
 void ofApp::exit(){
-  gui.saveToFile("KinectInteractive.xml");
+  gui.saveToFile("SoundSpace.xml");
 }
